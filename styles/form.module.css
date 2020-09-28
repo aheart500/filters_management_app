@@ -1,0 +1,42 @@
+.main {
+  height: 100vh;
+  background-color: gainsboro;
+}
+.formContainer {
+  width: 80%;
+  background-color: white;
+  margin: 1rem auto;
+  padding: 1rem;
+  box-shadow: 3px 5px 7px 0px #969696;
+  border-radius: 15px;
+}
+
+.inputContainer {
+  margin: 1rem 0;
+}
+.inputContainer label {
+  display: inline-block;
+  width: 250px;
+  vertical-align: top;
+  font-size: large;
+}
+.inputContainer textarea,
+.inputContainer input {
+  padding: 10px;
+  font-size: medium;
+  outline: 0;
+  border-radius: 7px;
+  border: 1px solid;
+}
+.inputContainer textarea {
+  resize: none;
+  width: 500px;
+  height: 75px;
+}
+.buttonsContainer {
+  font-size: larger;
+}
+.buttonsContainer button {
+  margin: 0 1rem;
+  transition: all 0.3s;
+}
