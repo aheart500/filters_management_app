@@ -1,6 +1,14 @@
+.mh-1 {
+  margin: 0 5px;
+}
 .custom-table {
   overflow-x: auto;
   max-height: 100vh;
+}
+.noWrap {
+  white-space: nowrap !important;
+  display: block !important;
+  width: auto !important;
 }
 .custom-table th,
 .custom-table td {

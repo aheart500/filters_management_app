@@ -13,6 +13,7 @@ export default gql`
     workers(offset: ID, search: String): [Worker!]!
   }
   extend type Mutation {
+    worker(id: ID!): Worker
     addWorker(
       name: String!
       phone: String

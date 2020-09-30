@@ -1,8 +1,7 @@
 import { IResolvers } from "apollo-server-express";
 import { FindOptions, Op } from "sequelize";
-import { WorkerAttributes } from "../Models/Worker";
 import { GraphQLContext } from "../types/Context";
-const LIMIT = 1;
+const LIMIT = 10;
 const query: FindOptions = {
   order: [["id", "DESC"]],
   limit: LIMIT,
@@ -41,6 +40,7 @@ const resolvers: IResolvers<any, GraphQLContext> = {
       await Worker.destroy({ where: { id } });
       return "Deleted";
     },
+    worker: (_, { id }, { Worker }) => Worker.findOne({ where: { id } }),
   },
 };
 

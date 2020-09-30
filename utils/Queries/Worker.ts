@@ -1,5 +1,4 @@
 import { gql } from "@apollo/client";
-
 const WorkerFragment = gql`
   fragment workerFragment on Worker {
     id
@@ -63,5 +62,13 @@ export const ADD_WORKER = gql`
 export const DELETE_WORKER = gql`
   mutation delete($id: ID!) {
     deleteWorker(id: $id)
+  }
+`;
+
+export const GET_WORKER = gql`
+  mutation worker($id: ID!) {
+    worker(id: $id) {
+      name
+    }
   }
 `;

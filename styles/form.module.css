@@ -1,6 +1,13 @@
 .main {
+  width: 100%;
   height: 100vh;
+
+  overflow: hidden;
   background-color: gainsboro;
+}
+.absolutee {
+  height: unset;
+  position: absolute;
 }
 .formContainer {
   width: 80%;
@@ -39,4 +46,15 @@
 .buttonsContainer button {
   margin: 0 1rem;
   transition: all 0.3s;
+}
+
+.spanName {
+  margin: 0 1rem;
+  font-size: large;
+}
+
+.spanError {
+  margin: 0 1rem;
+  color: red;
+  font-size: large;
 }

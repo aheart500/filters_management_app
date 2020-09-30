@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "../styles/home.module.css";
 const Home = () => {
   return (
-    <main className={styles.main}>
+    <main className={styles.main + " w3-container"}>
       <h1>الصفحة الرئيسية</h1>
       <div className={styles.buttons}>
         <Link href="/workers">
@@ -11,11 +11,41 @@ const Home = () => {
         <Link href="/workers/new">
           <button>إضافة موظف</button>
         </Link>
-        <Link href="/workers">
+        <Link href="/customers">
           <button> العملاء</button>
         </Link>
-        <Link href="/workers">
+        <Link href="/customers/new">
           <button>إضافة عميل</button>
+        </Link>
+        <Link href="/penalties">
+          <button>الجزاءات</button>
+        </Link>
+        <Link href="/penalties/new">
+          <button>إضافة جزاء</button>
+        </Link>
+        <Link href="/rewards">
+          <button> المكافاءات</button>
+        </Link>
+        <Link href="/rewards/new">
+          <button>إضافة مكافأة</button>
+        </Link>
+        <Link href="/absence">
+          <button> الغياب</button>
+        </Link>
+        <Link href="/absence/new">
+          <button>إضافة غياب</button>
+        </Link>
+        <Link href="/basics">
+          <button> أساسي مرتب</button>
+        </Link>
+        <Link href="/basics/new">
+          <button>إضافة أساسي مرتب</button>
+        </Link>
+        <Link href="/borrow">
+          <button> سلف</button>
+        </Link>
+        <Link href="/borrow/new">
+          <button>إضافة سلف</button>
         </Link>
       </div>
     </main>

@@ -3,7 +3,7 @@ import { FindOptions, Op } from "sequelize";
 import { Worker } from "../Models";
 import { GraphQLContext } from "../types/Context";
 const LIMIT = 10;
-const query = {
+export const CustomerModelQuery = {
   order: [["id", "DESC"]],
   limit: LIMIT,
   include: [
@@ -42,25 +42,37 @@ const query = {
 
 const resolvers: IResolvers<any, GraphQLContext> = {
   Query: {
-    customers: (_, { cursor }, { Customer }) => {
-      if (cursor)
-        return Customer.findAll({
-          where: {
+    customers: (_, { offset, search }, { Customer }) => {
+      let where: any = offset
+        ? {
             id: {
-              [Op.lt]: cursor,
+              [Op.lt]: offset,
             },
-          },
-          ...query,
-        });
+          }
+        : {};
+      if (search)
+        where = {
+          ...where,
+          [Op.or]: [
+            { id: { [Op.regexp]: search } },
+            { name: { [Op.regexp]: search } },
+          ],
+        };
 
-      return Customer.findAll({
-        ...query,
-      });
+      return Customer.findAll({ ...CustomerModelQuery, where });
     },
   },
   Mutation: {
     addCustomer: (_, args, { Customer }) => {
       return Customer.create(args);
+    },
+    updateCustomer: async (_, { id, ...args }, { Customer }) => {
+      await Customer.update(args, { where: { id } });
+      return "Updated";
+    },
+    deleteCustomer: async (_, { id }, { Customer }) => {
+      await Customer.destroy({ where: { id } });
+      return "Deleted";
     },
   },
 };

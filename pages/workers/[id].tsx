@@ -3,22 +3,19 @@ import { GetServerSideProps } from "next";
 import { useState } from "react";
 import { Worker } from "../../server/Models";
 import { WorkerAttributes } from "../../server/Models/Worker";
-import { DELETE_WORKER, UPDATE_WORKER } from "../../utils/Queries";
+import { DELETE_WORKER, UPDATE_WORKER } from "../../utils/Queries/Worker";
 import styles from "../../styles/form.module.css";
 import Header from "../../components/Header";
-
+import Form from "../../components/Form";
 const WorkerForm = ({ worker }: { worker: WorkerAttributes | null }) => {
-  const [data, setData] = useState<WorkerAttributes | null>(
-    worker
-      ? {
-          address: worker.address || "",
-          name: worker.name || "",
-          hire_date: worker.hire_date || "",
-          id: worker.id,
-          phone: worker.phone || "",
-          marital_status: worker.marital_status || "",
-        }
-      : null
+  let initialState = {};
+  if (worker) {
+    for (let key in worker) {
+      initialState[key] = worker[key] || "";
+    }
+  } else initialState = null;
+  const [data, setData] = useState<Partial<WorkerAttributes> | null>(
+    initialState
   );
   const [loading, setLoading] = useState(false);
 
@@ -57,71 +54,57 @@ const WorkerForm = ({ worker }: { worker: WorkerAttributes | null }) => {
           { title: " القائمة", link: "/workers" },
         ]}
       />
-      <div className={styles.formContainer}>
-        <h1>كود الموظف: {worker.id}</h1>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <div className={styles.inputContainer}>
-            <label>الأسم</label>
-            <input
-              type="text"
-              name="name"
-              value={data.name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.inputContainer}>
-            <label>رقم الهاتف</label>
-            <input
-              type="text"
-              name="phone"
-              value={data.phone}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.inputContainer}>
-            <label>العنوان</label>
-            <textarea
-              name="address"
-              value={data.address}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.inputContainer}>
-            <label>الحالة الإجتماعية</label>
-            <input
-              type="text"
-              name="marital_status"
-              value={data.marital_status}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.inputContainer}>
-            <label>تاريخ التعيين</label>
-            <input
-              type="date"
-              name="hire_date"
-              value={data.hire_date}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.buttonsContainer}>
-            <button
-              className="w3-button w3-black w3-hover-green"
-              onClick={() => handleMutation("update")}
-              disabled={loading}
-            >
-              تحديث البيانات
-            </button>
-            <button
-              className="w3-button w3-red w3-hover-green"
-              onClick={() => handleMutation("delete")}
-              disabled={loading}
-            >
-              حذف الموظف
-            </button>
-          </div>
-        </form>
-      </div>
+      <Form
+        header={`كود الموظف: ${worker.id}`}
+        data={data}
+        loading={loading}
+        handleChange={handleChange}
+        buttons={[
+          { title: "تحديث البيانات", onClick: () => handleMutation("update") },
+          {
+            title: "حذف الموظف",
+            onClick: () => handleMutation("delete"),
+            className: "w3-red",
+          },
+        ]}
+        fields={[
+          {
+            label: "الأسم",
+            type: "text",
+            props: {
+              name: "name",
+            },
+          },
+          {
+            label: "رقم الهاتف",
+            type: "text",
+            props: {
+              name: "phone",
+            },
+          },
+          {
+            label: "العنوان",
+            type: "textarea",
+            props: {
+              name: "address",
+            },
+          },
+          {
+            label: "الحالة الإجتماعية",
+            type: "text",
+            props: {
+              name: "marital_status",
+            },
+          },
+          {
+            label: "تاريخ التعيين",
+            type: "date",
+            props: {
+              name: "hire_date",
+            },
+          },
+        ]}
+      />
     </main>
   );
 };

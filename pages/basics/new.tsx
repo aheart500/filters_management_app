@@ -1,20 +1,26 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { WorkerAttributes } from "../../server/Models/Worker";
-import { ADD_WORKER } from "../../utils/Queries/Worker";
 import styles from "../../styles/form.module.css";
 import Header from "../../components/Header";
 import Form from "../../components/Form";
+import { ADD_BASICS } from "../../utils/Queries/Basics";
 const WorkerForm = () => {
-  const [data, setData] = useState<Omit<WorkerAttributes, "id">>({
-    address: "",
-    name: "",
-    hire_date: "",
-    phone: "",
-    marital_status: "",
+  const [data, setData] = useState({
+    month: "",
+    notes: "",
+    price: "",
+    year: "",
+    workerId: "",
   });
   const [loading, setLoading] = useState(false);
-  const [addWorker] = useMutation(ADD_WORKER, { variables: data });
+  const [add] = useMutation(ADD_BASICS, {
+    variables: {
+      ...data,
+      month: parseInt(data.month),
+      year: parseInt(data.year),
+      price: parseFloat(data.price),
+    },
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -22,23 +28,27 @@ const WorkerForm = () => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
   const handleSave = () => {
-    if (data.name === "") {
-      alert("برجاء إدخال الأسم");
+    if (data.workerId === "") {
+      alert("برجاء إدخال كود الموظف");
+      return;
+    }
+    if (data.price === "") {
+      alert("برجاء إدخال المبلغ");
       return;
     }
     setLoading(true);
-    addWorker().then(({ data }) => {
+    add().then(({ data }) => {
       setLoading(false);
-      window.location.replace(`/workers/${data.addWorker.id}`);
+      window.location.replace(`/basics/${data.addBasics.id}`);
     });
   };
   return (
     <main className={styles.main}>
       <Header
-        title="إضافة موظف جديد"
+        title="إضافة أساسي جديد"
         buttons={[
           { title: "الصفحة الرئيسية", link: "/" },
-          { title: " القائمة", link: "/workers" },
+          { title: " القائمة", link: "/basics" },
         ]}
       />
       <Form
@@ -48,38 +58,38 @@ const WorkerForm = () => {
         buttons={[{ title: "حفظ البيانات", onClick: handleSave }]}
         fields={[
           {
-            label: "الأسم",
-            type: "text",
+            label: "كود الموظف",
+            type: "worker",
             props: {
-              name: "name",
+              name: "workerId",
             },
           },
           {
-            label: "رقم الهاتف",
-            type: "text",
+            label: "الشهر",
+            type: "number",
             props: {
-              name: "phone",
+              name: "month",
             },
           },
           {
-            label: "العنوان",
+            label: "السنة",
+            type: "number",
+            props: {
+              name: "year",
+            },
+          },
+          {
+            label: "المبلغ",
+            type: "number",
+            props: {
+              name: "price",
+            },
+          },
+          {
+            label: "ملاحظات",
             type: "textarea",
             props: {
-              name: "address",
-            },
-          },
-          {
-            label: "الحالة الإجتماعية",
-            type: "text",
-            props: {
-              name: "marital_status",
-            },
-          },
-          {
-            label: "تاريخ التعيين",
-            type: "date",
-            props: {
-              name: "hire_date",
+              name: "notes",
             },
           },
         ]}

@@ -29,7 +29,7 @@ export default gql`
     f3: Worker
   }
   extend type Query {
-    customers(cursor: ID): [Customer!]!
+    customers(offset: ID, search: String): [Customer!]!
   }
   extend type Mutation {
     addCustomer(
@@ -52,5 +52,27 @@ export default gql`
       f2Id: ID
       f3Id: ID
     ): Customer
+    updateCustomer(
+      id: ID!
+      name: String
+      phone: String
+      city: String
+      state: String
+      address: String
+      payment_type: String
+      load_date: String
+      installment_price: Float
+      forward_payment: Float
+      total_price: Float
+      installments_number: Int
+      notes: String
+      m1Id: ID
+      m2Id: ID
+      m3Id: ID
+      f1Id: ID
+      f2Id: ID
+      f3Id: ID
+    ): String
+    deleteCustomer(id: ID!): String
   }
 `;

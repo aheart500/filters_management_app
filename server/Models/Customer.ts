@@ -1,6 +1,6 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
-import Worker from "./Worker";
+import Worker, { WorkerAttributes } from "./Worker";
 export interface CustomerAttributes {
   id: number;
   name: string;
@@ -15,12 +15,18 @@ export interface CustomerAttributes {
   total_price: number;
   installments_number: number;
   notes: string;
-  m1: number;
-  m2: number;
-  m3: number;
-  f1: number;
-  f2: number;
-  f3: number;
+  m1: WorkerAttributes;
+  m2: WorkerAttributes;
+  m3: WorkerAttributes;
+  f1: WorkerAttributes;
+  f2: WorkerAttributes;
+  f3: WorkerAttributes;
+  m1Id: number;
+  m2Id: number;
+  m3Id: number;
+  f1Id: number;
+  f2Id: number;
+  f3Id: number;
 }
 
 export interface CustomerCreationAttributes

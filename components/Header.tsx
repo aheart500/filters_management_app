@@ -22,7 +22,7 @@ const Header = ({ title, buttons, search }: HeaderProps) => {
           <div>
             {buttons.map((button, i) => (
               <button
-                className="w3-button w3-black w3-hover-red"
+                className="w3-button w3-black w3-hover-red mh-1"
                 key={i}
                 onClick={() => window.location.replace(button.link)}
               >
