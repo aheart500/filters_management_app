@@ -148,3 +148,28 @@ export const DELETE_CUSTOMER = gql`
     deleteCustomer(id: $id)
   }
 `;
+
+export const GET_CUSTOMER = gql`
+  mutation customer($id: ID!) {
+    customer(id: $id) {
+      name
+    }
+  }
+`;
+
+export const GET_INSTALLMENTS = gql`
+  query getInstallments($customerId: ID!) {
+    installments(customerId: $customerId) {
+      id
+      year
+      month
+      paid
+      fixed
+    }
+  }
+`;
+export const UPDATE_INSTALLMENT = gql`
+  mutation update($id: ID!, $fixed: Boolean, $paid: Boolean) {
+    updateInstallment(id: $id, fixed: $fixed, paid: $paid)
+  }
+`;

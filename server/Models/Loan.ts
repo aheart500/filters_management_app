@@ -1,22 +1,21 @@
-import db from "../MySQL";
+/* import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
+import { WorkerAttributes } from "./Worker";
 
-export interface BasicsAttributes {
+export interface LoanAttributes {
   id: number;
   month: number;
   year: number;
   notes: string;
   price: number;
   workerId: number;
+  worker: WorkerAttributes;
 }
 
-export interface BasicsCreationAttributes
-  extends Optional<BasicsAttributes, "id"> {}
-const Basics: ModelDefined<
-  BasicsAttributes,
-  BasicsCreationAttributes
-> = db.define(
-  "Basics",
+export interface LoanCreationAttributes
+  extends Optional<LoanAttributes, "id"> {}
+const Loan: ModelDefined<LoanAttributes, LoanCreationAttributes> = db.define(
+  "Loan",
   {
     id: {
       primaryKey: true,
@@ -40,4 +39,6 @@ const Basics: ModelDefined<
   { timestamps: false }
 );
 
-export default Basics;
+export default Loan;
+ */
+export const h = "gg";

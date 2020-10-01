@@ -56,6 +56,18 @@ const CustomerForm = () => {
       alert("برجاء إدخال الأسم");
       return;
     }
+    if (data.load_date === "") {
+      alert("برجاء إدخال تاريخ التنزيل");
+      return;
+    }
+    if (data.payment_type === "قسط" && data.installment_price === "") {
+      alert("برجاء إدخال سعر القسط ");
+      return;
+    }
+    if (data.payment_type === "قسط" && data.installments_number === "") {
+      alert("برجاء إدخال عدد الأقساط");
+      return;
+    }
     setLoading(true);
 
     addCustomer().then(({ data }) => {

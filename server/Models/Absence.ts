@@ -1,6 +1,5 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
-import Worker from "./Worker";
 
 export interface AbsenceAttributes {
   id: number;
@@ -53,5 +52,4 @@ const Absence: ModelDefined<
   { timestamps: false }
 );
 
-Absence.belongsTo(Worker, { as: "worker" });
 export default Absence;

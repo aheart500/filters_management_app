@@ -1,12 +1,21 @@
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
+import { CustomerAttributes } from "../server/Models/Customer";
 import { WorkerAttributes } from "../server/Models/Worker";
 import styles from "../styles/form.module.css";
+import { GET_CUSTOMER } from "../utils/Queries/Customer";
 import { GET_WORKER } from "../utils/Queries/Worker";
+interface Person {
+  name: string;
+  message: string;
+  loading: boolean;
+  error: boolean;
+}
 interface InputFieldProps {
   placeholder?: string;
   name: string;
   values?: string[];
+  disabled?: boolean;
 }
 interface ButtonProps {
   title: string;
@@ -15,7 +24,14 @@ interface ButtonProps {
 }
 interface InputFieldContainer {
   label: string;
-  type: "text" | "textarea" | "date" | "number" | "select" | "worker";
+  type:
+    | "text"
+    | "textarea"
+    | "date"
+    | "number"
+    | "select"
+    | "worker"
+    | "customer";
   props: InputFieldProps;
 }
 interface FormProps {
@@ -35,26 +51,29 @@ const Form = ({
   header,
   fields,
 }: FormProps) => {
-  let workers: Array<{
-    name: string;
-    message: string;
-    loading: boolean;
-    error: boolean;
-  }> = [];
+  let workers: Array<Person> = [];
+  let customers: Array<Person> = [];
   const [getWorker] = useMutation<{ worker: Pick<WorkerAttributes, "name"> }>(
     GET_WORKER
   );
+  const [getCustomer] = useMutation<{
+    customer: Pick<CustomerAttributes, "name">;
+  }>(GET_CUSTOMER);
   fields.forEach((field) => {
-    if (field.type === "worker")
-      workers.push({
-        name: field.props.name,
-        message: "",
-        loading: false,
-        error: false,
-      });
+    const theField = {
+      name: field.props.name,
+      message: "",
+      loading: false,
+      error: false,
+    };
+    if (field.type === "worker") workers.push(theField);
+    if (field.type === "customer") customers.push(theField);
   });
   const [workerFields, setWorkerFields] = useState(
     workers.length > 0 ? workers : null
+  );
+  const [customerFields, setCustomerFields] = useState(
+    customers.length > 0 ? customers : null
   );
 
   useEffect(() => {
@@ -85,6 +104,40 @@ const Form = ({
                       message: data.worker.name,
                     };
                   return workerField;
+                });
+              });
+            }
+          );
+        }
+      });
+    }
+    if (customerFields) {
+      customerFields.forEach((field) => {
+        if (data[field.name] !== "") {
+          setCustomerFields((prev) => {
+            return prev.map((customerFields) => {
+              if (customerFields.name === field.name)
+                return {
+                  ...customerFields,
+                  loading: true,
+                  error: false,
+                  message: "",
+                };
+              return customerFields;
+            });
+          });
+          getCustomer({ variables: { id: data[field.name] } }).then(
+            ({ data }) => {
+              setCustomerFields((prev) => {
+                return prev.map((customerFields) => {
+                  if (customerFields.name === field.name)
+                    return {
+                      ...customerFields,
+                      loading: false,
+                      error: false,
+                      message: data.customer.name,
+                    };
+                  return customerFields;
                 });
               });
             }
@@ -142,6 +195,55 @@ const Form = ({
     });
   };
 
+  const handleCustomer = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    cb: typeof handleChange
+  ) => {
+    cb(e);
+    const { name, value } = e.target;
+    if (value === "") {
+      setCustomerFields(
+        customerFields.map((field) => {
+          if (field.name === name)
+            return { ...field, loading: false, error: false, message: "" };
+          return field;
+        })
+      );
+      return;
+    }
+    setCustomerFields(
+      customerFields.map((field) => {
+        if (field.name === name)
+          return { ...field, loading: true, error: false, message: "" };
+        return field;
+      })
+    );
+    getCustomer({ variables: { id: value } }).then(({ data }) => {
+      if (data.customer) {
+        setCustomerFields(
+          customerFields.map((field) => {
+            if (field.name === name)
+              return {
+                ...field,
+                loading: false,
+                error: false,
+                message: data.customer.name,
+              };
+            return field;
+          })
+        );
+      } else {
+        setCustomerFields(
+          customerFields.map((field) => {
+            if (field.name === name)
+              return { ...field, loading: false, error: true };
+            return field;
+          })
+        );
+      }
+    });
+  };
+
   return (
     <div className={styles.formContainer}>
       {header && <h1>{header}</h1>}
@@ -156,6 +258,11 @@ const Form = ({
               (workerField) => workerField.name === field.props.name
             );
           }
+          if (field.type === "customer") {
+            var thisField = customerFields.find(
+              (customerField) => customerField.name === field.props.name
+            );
+          }
           return (
             <div className={styles.inputContainer} key={i}>
               <label>{field.label}</label>
@@ -167,6 +274,29 @@ const Form = ({
               )}
               {field.type === "number" && (
                 <input type="number" {...field.props} {...valueProps} />
+              )}
+              {field.type === "customer" && (
+                <>
+                  <input
+                    type="number"
+                    {...field.props}
+                    value={valueProps.value}
+                    onChange={(e) => handleCustomer(e, valueProps.onChange)}
+                  />
+                  <span
+                    className={
+                      thisField.error ? styles.spanError : styles.spanName
+                    }
+                  >
+                    {thisField.loading
+                      ? "جاري التحميل ..."
+                      : thisField.error
+                      ? "لا يوجد عميل بهذا الكود"
+                      : thisField.message
+                      ? `الأسم: ${thisField.message}`
+                      : ""}
+                  </span>
+                </>
               )}
               {field.type === "worker" && (
                 <>
@@ -203,6 +333,7 @@ const Form = ({
                     border: "none",
                     padding: "9px 0.5rem",
                   }}
+                  disabled={field.props.disabled || false}
                   name={field.props.name}
                   placeholder={field.props.placeholder}
                   {...valueProps}
@@ -224,7 +355,14 @@ const Form = ({
               loading ||
               (workerFields &&
                 workerFields.length > 0 &&
-                !workerFields.every((field) => !field.loading && !field.error));
+                !workerFields.every(
+                  (field) => !field.loading && !field.error
+                )) ||
+              (customerFields &&
+                customerFields.length > 0 &&
+                !customerFields.every(
+                  (field) => !field.loading && !field.error
+                ));
             return (
               <button
                 key={i}

@@ -28,10 +28,21 @@ export default gql`
     f2: Worker
     f3: Worker
   }
+  type Installment {
+    id: ID!
+    year: Int!
+    month: Int!
+    paid: Boolean!
+    fixed: Boolean!
+    customerId: ID!
+  }
   extend type Query {
     customers(offset: ID, search: String): [Customer!]!
+    installments(customerId: ID!): [Installment!]!
   }
   extend type Mutation {
+    customer(id: ID!): Customer
+    updateInstallment(id: ID!, fixed: Boolean, paid: Boolean): String
     addCustomer(
       name: String!
       phone: String

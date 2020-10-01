@@ -9,6 +9,9 @@ import {
   Basics,
   Borrow,
   Reward,
+  InstallingFee,
+  SellingFee,
+  Installment,
 } from "./Models";
 import { GraphQLContext } from "./types/Context";
 
@@ -23,5 +26,8 @@ export default new ApolloServer({
     Basics,
     Borrow,
     Reward,
+    InstallingFee,
+    SellingFee,
+    Installment,
   }),
 });

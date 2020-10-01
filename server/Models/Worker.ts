@@ -1,5 +1,14 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
+import Penalty from "./Penalty";
+import Absence from "./Absence";
+import Basics from "./Basics";
+import Borrow from "./Borrow";
+import Customer from "./Customer";
+import Reward from "./Reward";
+import InstallingFee from "./InstallingFee";
+import SellingFee from "./SellingFee";
+import Installment from "./Installment";
 
 export interface WorkerAttributes {
   id: number;
@@ -42,4 +51,39 @@ const Worker: ModelDefined<
   },
   { timestamps: false }
 );
+Worker.hasMany(Penalty, { as: "penalties", foreignKey: "workerId" });
+Worker.hasMany(Absence, { as: "absence", foreignKey: "workerId" });
+Worker.hasMany(Basics, { as: "basics", foreignKey: "workerId" });
+Worker.hasMany(Borrow, { as: "borrows", foreignKey: "workerId" });
+Worker.hasMany(Reward, { as: "rewards", foreignKey: "workerId" });
+
+Worker.hasMany(InstallingFee, { as: "installingFees", foreignKey: "workerId" });
+Worker.hasMany(SellingFee, { as: "sellingFees", foreignKey: "workerId" });
+
+Worker.hasMany(Customer, { as: "m1", foreignKey: "m1Id" });
+Worker.hasMany(Customer, { as: "m2", foreignKey: "m2Id" });
+Worker.hasMany(Customer, { as: "m3", foreignKey: "m3Id" });
+Worker.hasMany(Customer, { as: "f1", foreignKey: "f1Id" });
+Worker.hasMany(Customer, { as: "f2", foreignKey: "f2Id" });
+Worker.hasMany(Customer, { as: "f3", foreignKey: "f3Id" });
+
+Penalty.belongsTo(Worker, { as: "worker" });
+Absence.belongsTo(Worker, { as: "worker" });
+Basics.belongsTo(Worker, { as: "worker" });
+Borrow.belongsTo(Worker, { as: "worker" });
+Reward.belongsTo(Worker, { as: "worker" });
+
+InstallingFee.belongsTo(Worker, { as: "worker" });
+SellingFee.belongsTo(Worker, { as: "worker" });
+InstallingFee.belongsTo(Customer, { as: "customer" });
+SellingFee.belongsTo(Customer, { as: "customer" });
+
+Installment.belongsTo(Customer, { as: "customer" });
+
+Customer.belongsTo(Worker, { as: "m1" });
+Customer.belongsTo(Worker, { as: "m2" });
+Customer.belongsTo(Worker, { as: "m3" });
+Customer.belongsTo(Worker, { as: "f1" });
+Customer.belongsTo(Worker, { as: "f2" });
+Customer.belongsTo(Worker, { as: "f3" });
 export default Worker;

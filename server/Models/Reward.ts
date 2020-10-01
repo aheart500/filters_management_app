@@ -1,6 +1,5 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
-import Worker from "./Worker";
 
 export interface RewardAttributes {
   id: number;
@@ -41,5 +40,4 @@ const Reward: ModelDefined<
   { timestamps: false }
 );
 
-Reward.belongsTo(Worker, { as: "worker" });
 export default Reward;

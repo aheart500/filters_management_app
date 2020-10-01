@@ -45,5 +45,4 @@ const Penalty: ModelDefined<
   { timestamps: false }
 );
 
-Penalty.belongsTo(Worker, { as: "worker" });
 export default Penalty;

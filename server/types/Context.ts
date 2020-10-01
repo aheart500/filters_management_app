@@ -10,10 +10,22 @@ import {
   CustomerCreationAttributes,
 } from "../Models/Customer";
 import {
+  InstalligFeeCreationAttributes,
+  InstallingFeeAttributes,
+} from "../Models/InstallingFee";
+import {
+  InstallmentAttributes,
+  InstallmentCreationAttributes,
+} from "../Models/Installment";
+import {
   PenaltyAttributes,
   PenaltyCreationAttributes,
 } from "../Models/Penalty";
 import { RewardAttributes, RewardCreationAttributes } from "../Models/Reward";
+import {
+  SellingFeeAttributes,
+  SellingFeeCreationAttributes,
+} from "../Models/SellingFee";
 import { WorkerAttributes, WorkerCreationAttributes } from "../Models/Worker";
 
 export interface GraphQLContext {
@@ -24,4 +36,13 @@ export interface GraphQLContext {
   Reward: ModelCtor<Model<RewardAttributes, RewardCreationAttributes>>;
   Basics: ModelCtor<Model<BasicsAttributes, BasicsCreationAttributes>>;
   Borrow: ModelCtor<Model<BorrowAttributes, BorrowCreationAttributes>>;
+  InstallingFee: ModelCtor<
+    Model<InstallingFeeAttributes, InstalligFeeCreationAttributes>
+  >;
+  SellingFee: ModelCtor<
+    Model<SellingFeeAttributes, SellingFeeCreationAttributes>
+  >;
+  Installment: ModelCtor<
+    Model<InstallmentAttributes, InstallmentCreationAttributes>
+  >;
 }

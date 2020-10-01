@@ -1,6 +1,6 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
-import Worker, { WorkerAttributes } from "./Worker";
+import { WorkerAttributes } from "./Worker";
 export interface CustomerAttributes {
   id: number;
   name: string;
@@ -84,11 +84,5 @@ const Customer: ModelDefined<
     timestamps: false,
   }
 );
-Customer.belongsTo(Worker, { as: "m1" });
-Customer.belongsTo(Worker, { as: "m2" });
-Customer.belongsTo(Worker, { as: "m3" });
-Customer.belongsTo(Worker, { as: "f1" });
-Customer.belongsTo(Worker, { as: "f2" });
-Customer.belongsTo(Worker, { as: "f3" });
 
 export default Customer;

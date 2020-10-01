@@ -1,6 +1,6 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
-import Worker from "./Worker";
+import { WorkerAttributes } from "./Worker";
 
 export interface BorrowAttributes {
   id: number;
@@ -9,6 +9,7 @@ export interface BorrowAttributes {
   notes: string;
   price: number;
   workerId: number;
+  worker: WorkerAttributes;
 }
 
 export interface BorrowCreationAttributes
@@ -41,5 +42,4 @@ const Borrow: ModelDefined<
   { timestamps: false }
 );
 
-Borrow.belongsTo(Worker, { as: "worker" });
 export default Borrow;

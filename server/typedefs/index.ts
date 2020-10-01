@@ -6,6 +6,7 @@ import Absence from "./Absence";
 import Reward from "./Reward";
 import Borrow from "./Borrow";
 import Basics from "./Basics";
+import Fees from "./Fees";
 
 export default [
   Root,
@@ -16,4 +17,5 @@ export default [
   Reward,
   Basics,
   Borrow,
+  Fees,
 ];

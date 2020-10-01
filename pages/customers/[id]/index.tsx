@@ -1,13 +1,16 @@
 import { useMutation } from "@apollo/client";
 import { GetServerSideProps } from "next";
 import { useState } from "react";
-import { Customer } from "../../server/Models";
-import { CustomerAttributes } from "../../server/Models/Customer";
-import { DELETE_CUSTOMER, UPDATE_CUSTOMER } from "../../utils/Queries/Customer";
-import styles from "../../styles/form.module.css";
-import Header from "../../components/Header";
-import Form from "../../components/Form";
-import { CustomerModelQuery } from "../../server/resolvers/Customers";
+import { Customer } from "../../../server/Models";
+import { CustomerAttributes } from "../../../server/Models/Customer";
+import {
+  DELETE_CUSTOMER,
+  UPDATE_CUSTOMER,
+} from "../../../utils/Queries/Customer";
+import styles from "../../../styles/form.module.css";
+import Header from "../../../components/Header";
+import Form from "../../../components/Form";
+import { CustomerModelQuery } from "../../../server/resolvers/Customers";
 
 const CustomerForm = ({
   customer,
@@ -74,15 +77,19 @@ const CustomerForm = ({
       });
     }
   };
+  let buttons = [
+    { title: "الصفحة الرئيسية", link: "/" },
+    { title: " القائمة", link: "/customers" },
+  ];
+  if (customer.payment_type === "قسط") {
+    buttons.unshift({
+      link: "/customers/" + customer.id + "/installments",
+      title: "الأقساط",
+    });
+  }
   return (
     <main className={styles.main + " " + styles.absolutee}>
-      <Header
-        title={`العميل: ${customer.name}`}
-        buttons={[
-          { title: "الصفحة الرئيسية", link: "/" },
-          { title: " القائمة", link: "/customers" },
-        ]}
-      />
+      <Header title={`العميل: ${customer.name}`} buttons={buttons} />
       <Form
         header={`كود العميل: ${customer.id}`}
         data={data}
@@ -138,6 +145,7 @@ const CustomerForm = ({
             props: {
               name: "payment_type",
               values: ["قسط", "كاش"],
+              disabled: true,
             },
           },
           {
@@ -159,6 +167,7 @@ const CustomerForm = ({
             type: "number",
             props: {
               name: "installments_number",
+              disabled: true,
             },
           },
           {
@@ -174,6 +183,7 @@ const CustomerForm = ({
             type: "date",
             props: {
               name: "load_date",
+              disabled: true,
             },
           },
           {

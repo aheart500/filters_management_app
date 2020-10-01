@@ -5,5 +5,19 @@ import Absence from "./Absence";
 import Basics from "./Basics";
 import Borrow from "./Borrow";
 import Reward from "./Reward";
+import InstallingFee from "./InstallingFee";
+import SellingFee from "./SellingFee";
+import Installment from "./Installment";
 
-export { Worker, Customer, Penalty, Absence, Basics, Borrow, Reward };
+export {
+  Worker,
+  Customer,
+  Penalty,
+  Absence,
+  Basics,
+  Borrow,
+  Reward,
+  InstallingFee,
+  SellingFee,
+  Installment,
+};

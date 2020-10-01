@@ -47,8 +47,28 @@ const Home = () => {
         <Link href="/borrow/new">
           <button>إضافة سلف</button>
         </Link>
+        <Link href="/installationFees">
+          <button> عمولات التركيب</button>
+        </Link>
+        <Link href="/installationFees/new">
+          <button>إضافة عمولة تركيب</button>
+        </Link>
+        <Link href="/sellingFees">
+          <button> عمولات البيع</button>
+        </Link>
+        <Link href="/sellingFees/new">
+          <button>إضافة عمولة بيع</button>
+        </Link>
       </div>
     </main>
   );
 };
+export const getServerSideProps = async () => {
+  return {
+    props: {
+      name: "h",
+    },
+  };
+};
+
 export default Home;

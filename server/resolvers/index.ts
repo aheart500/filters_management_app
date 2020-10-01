@@ -5,4 +5,14 @@ import Absence from "./Absence";
 import Reward from "./Reward";
 import Borrow from "./Borrow";
 import Basics from "./Basics";
-export default [Workers, Customers, Penalties, Absence, Reward, Borrow, Basics];
+import Fees from "./Fees";
+export default [
+  Workers,
+  Customers,
+  Penalties,
+  Absence,
+  Reward,
+  Borrow,
+  Basics,
+  Fees,
+];
