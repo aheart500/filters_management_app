@@ -8,6 +8,8 @@ import Reward from "./Reward";
 import InstallingFee from "./InstallingFee";
 import SellingFee from "./SellingFee";
 import Installment from "./Installment";
+import Loan from "./Loan";
+import Order from "./Order";
 
 export {
   Worker,
@@ -20,4 +22,6 @@ export {
   InstallingFee,
   SellingFee,
   Installment,
+  Loan,
+  Order,
 };

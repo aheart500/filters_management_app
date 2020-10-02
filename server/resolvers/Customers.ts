@@ -1,7 +1,7 @@
 import { IResolvers } from "apollo-server-express";
-import { FindOptions, Op } from "sequelize";
+import { FindOptions, Op, where } from "sequelize";
 import { Worker } from "../Models";
-import { CustomerAttributes } from "../Models/Customer";
+import Customer, { CustomerAttributes } from "../Models/Customer";
 import { InstallmentAttributes } from "../Models/Installment";
 import { GraphQLContext } from "../types/Context";
 const LIMIT = 10;
@@ -103,11 +103,26 @@ const resolvers: IResolvers<any, GraphQLContext> = {
       await Installment.update(args, { where: { id } });
       return "Updated";
     },
+    updateInstallments: async (_, { ids, ...args }, { Installment }) => {
+      await Installment.update(args, { where: { id: { [Op.in]: ids } } });
+      return "Updated";
+    },
     deleteCustomer: async (_, { id }, { Customer }) => {
       await Customer.destroy({ where: { id } });
       return "Deleted";
     },
     customer: (_, { id }, { Customer }) => Customer.findOne({ where: { id } }),
+    filteredInstallments: (_, { city, ...args }, { Installment }) => {
+      return Installment.findAll({
+        where: args,
+        include: {
+          model: Customer,
+          as: "customer",
+          attributes: ["id", "name", "city", "address", "installment_price"],
+          where: city ? { city: { [Op.regexp]: city } } : {},
+        },
+      });
+    },
   },
 };
 

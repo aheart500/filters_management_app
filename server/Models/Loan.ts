@@ -1,4 +1,4 @@
-/* import db from "../MySQL";
+import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
 import { WorkerAttributes } from "./Worker";
 
@@ -7,6 +7,7 @@ export interface LoanAttributes {
   month: number;
   year: number;
   notes: string;
+  paid: number;
   price: number;
   workerId: number;
   worker: WorkerAttributes;
@@ -35,10 +36,9 @@ const Loan: ModelDefined<LoanAttributes, LoanCreationAttributes> = db.define(
     price: {
       type: DataTypes.FLOAT,
     },
+    paid: DataTypes.FLOAT,
   },
   { timestamps: false }
 );
 
 export default Loan;
- */
-export const h = "gg";

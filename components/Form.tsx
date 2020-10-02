@@ -8,9 +8,10 @@ import { GET_WORKER } from "../utils/Queries/Worker";
 import { Person, LoadAndSet, handleLoadAndSet } from "../utils/LoadField";
 interface InputFieldProps {
   placeholder?: string;
-  name: string;
+  name?: string;
   values?: string[];
   disabled?: boolean;
+  value?: React.ReactNode;
 }
 interface ButtonProps {
   title: string;
@@ -26,7 +27,8 @@ interface InputFieldContainer {
     | "number"
     | "select"
     | "worker"
-    | "customer";
+    | "customer"
+    | "component";
   props: InputFieldProps;
 }
 interface FormProps {
@@ -167,6 +169,7 @@ const Form = ({
               {field.type === "textarea" && (
                 <textarea {...field.props} {...valueProps} />
               )}
+              {field.type === "component" && field.props.value}
               {field.type === "select" && (
                 <select
                   className="w3-select"

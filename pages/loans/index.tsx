@@ -2,16 +2,16 @@ import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import Header from "../../components/Header";
 import Table from "../../components/Table";
-import { BorrowAttributes } from "../../server/Models/Borrow";
-import { GET_BORROWS } from "../../utils/Queries/Borrow";
+import { LoanAttributes } from "../../server/Models/Loan";
+import { GET_LOANS } from "../../utils/Queries/Loan";
 let keysTranslated = (keys: string[]) => {
+  keys.splice(8, 0, "rest");
   return keys
     ? keys
         .map((key) => {
           switch (key) {
             case "id":
               return { title: "الكود", width: "70px" };
-
             case "month":
               return { title: "الشهر", width: "50px" };
             case "year":
@@ -19,7 +19,11 @@ let keysTranslated = (keys: string[]) => {
             case "notes":
               return { title: "ملاحظات", width: "200px" };
             case "price":
-              return { title: "المبلغ", width: "100px" };
+              return { title: "مبلغ القرض", width: "100px" };
+            case "paid":
+              return { title: "المسدد", width: "100px" };
+            case "rest":
+              return { title: "المتبقي", width: "100px" };
             case "workerId":
               return { title: "كود الموظف", width: "70px" };
             case "worker":
@@ -33,31 +37,32 @@ let keysTranslated = (keys: string[]) => {
 const Penalties = () => {
   const [search, setSearch] = useState("");
   const { data, loading, fetchMore } = useQuery<{
-    borrows: BorrowAttributes[];
-  }>(GET_BORROWS, { variables: { search } });
+    loans: LoanAttributes[];
+  }>(GET_LOANS, { variables: { search } });
 
-  let borrows = data?.borrows;
+  let loans = data?.loans;
   const PenaltyKeys =
-    borrows && borrows[0]
-      ? (Object.keys(borrows[0]) as Array<keyof BorrowAttributes>)
+    loans && loans[0]
+      ? (Object.keys(loans[0]) as Array<keyof LoanAttributes>)
       : [];
   const keys = keysTranslated(PenaltyKeys);
   const loadMore = () => {
     fetchMore({
-      variables: { offset: data.borrows[data.borrows.length - 1].id },
+      variables: { offset: data.loans[data.loans.length - 1].id },
       updateQuery: (prev, { fetchMoreResult }) => {
-        const newPenalties = fetchMoreResult.borrows;
+        const newPenalties = fetchMoreResult.loans;
         if (newPenalties.length === 0) return prev;
         return {
-          borrows: [...prev.borrows, ...newPenalties],
+          loans: [...prev.loans, ...newPenalties],
         };
       },
     });
   };
+
   return (
     <div>
       <Header
-        title="السلف"
+        title="القروض"
         search={{
           value: search,
           placeholder: "كود او اسم الموظف",
@@ -65,16 +70,29 @@ const Penalties = () => {
         }}
         buttons={[
           { title: "الصفحة الرئيسية", link: "/" },
-          { title: "إضافة سلف جديد", link: "/borrow/new" },
+          { title: "إضافة قرض جديد", link: "/loans/new" },
         ]}
       />
 
-      {!loading && borrows && (
+      {!loading && loans && (
         <Table
-          data={borrows}
+          data={loans.map((loan) => {
+            const rest = loan.paid ? loan.price - loan.paid : loan.price;
+            return {
+              id: loan.id,
+              workerId: loan.workerId,
+              worker: loan.worker,
+              month: loan.month,
+              year: loan.year,
+              price: loan.price,
+              paid: loan.paid,
+              rest,
+              notes: loan.notes,
+            };
+          })}
           heads={keys}
           withoutId={true}
-          linkBeginning="/borrow"
+          linkBeginning="/loans"
           loadMore={loadMore}
         />
       )}

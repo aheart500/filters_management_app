@@ -169,7 +169,30 @@ export const GET_INSTALLMENTS = gql`
   }
 `;
 export const UPDATE_INSTALLMENT = gql`
-  mutation update($id: ID!, $fixed: Boolean, $paid: Boolean) {
-    updateInstallment(id: $id, fixed: $fixed, paid: $paid)
+  mutation update($id: ID!, $fixed: Boolean, $paid: Boolean, $orderId: ID) {
+    updateInstallment(id: $id, fixed: $fixed, paid: $paid, orderId: $orderId)
+  }
+`;
+export const UPDATE_INSTALLMENTS = gql`
+  mutation update($ids: [ID!]!, $fixed: Boolean, $paid: Boolean, $orderId: ID) {
+    updateInstallments(ids: $ids, fixed: $fixed, paid: $paid, orderId: $orderId)
+  }
+`;
+export const GET_FILTERED_INSTALLMENTS = gql`
+  mutation getInstallments($city: String, $year: Int, $month: Int) {
+    filteredInstallments(city: $city, year: $year, month: $month) {
+      id
+      year
+      month
+      paid
+      fixed
+      customerId
+      customer {
+        id
+        name
+        installment_price
+        address
+      }
+    }
   }
 `;

@@ -9,6 +9,8 @@ import Reward from "./Reward";
 import InstallingFee from "./InstallingFee";
 import SellingFee from "./SellingFee";
 import Installment from "./Installment";
+import Loan from "./Loan";
+import Order from "./Order";
 
 export interface WorkerAttributes {
   id: number;
@@ -72,6 +74,8 @@ Absence.belongsTo(Worker, { as: "worker" });
 Basics.belongsTo(Worker, { as: "worker" });
 Borrow.belongsTo(Worker, { as: "worker" });
 Reward.belongsTo(Worker, { as: "worker" });
+Loan.belongsTo(Worker, { as: "worker" });
+Order.belongsTo(Worker, { as: "worker" });
 
 InstallingFee.belongsTo(Worker, { as: "worker" });
 SellingFee.belongsTo(Worker, { as: "worker" });
@@ -79,7 +83,8 @@ InstallingFee.belongsTo(Customer, { as: "customer" });
 SellingFee.belongsTo(Customer, { as: "customer" });
 
 Installment.belongsTo(Customer, { as: "customer" });
-
+Order.hasMany(Installment, { as: "installments", foreignKey: "orderId" });
+Customer.hasMany(Installment, { as: "installments", foreignKey: "customerId" });
 Customer.belongsTo(Worker, { as: "m1" });
 Customer.belongsTo(Worker, { as: "m2" });
 Customer.belongsTo(Worker, { as: "m3" });

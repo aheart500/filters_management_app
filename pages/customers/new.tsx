@@ -56,6 +56,10 @@ const CustomerForm = () => {
       alert("برجاء إدخال الأسم");
       return;
     }
+    if (data.city === "") {
+      alert("برجاء إدخال القرية ");
+      return;
+    }
     if (data.load_date === "") {
       alert("برجاء إدخال تاريخ التنزيل");
       return;

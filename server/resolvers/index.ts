@@ -6,6 +6,8 @@ import Reward from "./Reward";
 import Borrow from "./Borrow";
 import Basics from "./Basics";
 import Fees from "./Fees";
+import Loan from "./Loan";
+import Order from "./Order";
 export default [
   Workers,
   Customers,
@@ -15,4 +17,6 @@ export default [
   Borrow,
   Basics,
   Fees,
+  Loan,
+  Order,
 ];

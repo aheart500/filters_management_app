@@ -130,6 +130,7 @@ const CustomerForm = ({
             type: "text",
             props: {
               name: "city",
+              disabled: true,
             },
           },
           {

@@ -2,28 +2,31 @@ import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import Header from "../../components/Header";
 import Table from "../../components/Table";
-import { BorrowAttributes } from "../../server/Models/Borrow";
-import { GET_BORROWS } from "../../utils/Queries/Borrow";
+import { OrderAttributes } from "../../server/Models/Order";
+import { GET_ORDERS } from "../../utils/Queries/Order";
 let keysTranslated = (keys: string[]) => {
   return keys
     ? keys
         .map((key) => {
           switch (key) {
             case "id":
-              return { title: "الكود", width: "70px" };
-
+              return { title: "كود الأوردر", width: "70px" };
+            case "day":
+              return { title: "اليوم", width: "50px" };
             case "month":
               return { title: "الشهر", width: "50px" };
             case "year":
               return { title: "السنة", width: "50px" };
             case "notes":
               return { title: "ملاحظات", width: "200px" };
-            case "price":
-              return { title: "المبلغ", width: "100px" };
+            case "city":
+              return { title: "القرية", width: "70px" };
+            case "installments":
+              return { title: "عدد الوصولات", width: "70px" };
             case "workerId":
               return { title: "كود الموظف", width: "70px" };
             case "worker":
-              return { title: "اسم الموظف", width: "150px" };
+              return { title: "اسم الموظف", width: "100px" };
           }
         })
         .filter((key) => key)
@@ -33,23 +36,23 @@ let keysTranslated = (keys: string[]) => {
 const Penalties = () => {
   const [search, setSearch] = useState("");
   const { data, loading, fetchMore } = useQuery<{
-    borrows: BorrowAttributes[];
-  }>(GET_BORROWS, { variables: { search } });
+    orders: OrderAttributes[];
+  }>(GET_ORDERS, { variables: { search } });
 
-  let borrows = data?.borrows;
+  let orders = data?.orders;
   const PenaltyKeys =
-    borrows && borrows[0]
-      ? (Object.keys(borrows[0]) as Array<keyof BorrowAttributes>)
+    orders && orders[0]
+      ? (Object.keys(orders[0]) as Array<keyof OrderAttributes>)
       : [];
   const keys = keysTranslated(PenaltyKeys);
   const loadMore = () => {
     fetchMore({
-      variables: { offset: data.borrows[data.borrows.length - 1].id },
+      variables: { offset: data.orders[data.orders.length - 1].id },
       updateQuery: (prev, { fetchMoreResult }) => {
-        const newPenalties = fetchMoreResult.borrows;
+        const newPenalties = fetchMoreResult.orders;
         if (newPenalties.length === 0) return prev;
         return {
-          borrows: [...prev.borrows, ...newPenalties],
+          orders: [...prev.orders, ...newPenalties],
         };
       },
     });
@@ -57,7 +60,7 @@ const Penalties = () => {
   return (
     <div>
       <Header
-        title="السلف"
+        title="الأوردرات"
         search={{
           value: search,
           placeholder: "كود او اسم الموظف",
@@ -65,16 +68,18 @@ const Penalties = () => {
         }}
         buttons={[
           { title: "الصفحة الرئيسية", link: "/" },
-          { title: "إضافة سلف جديد", link: "/borrow/new" },
+          { title: "إضافة اوردر جديد", link: "/orders/new" },
         ]}
       />
 
-      {!loading && borrows && (
+      {!loading && orders && (
         <Table
-          data={borrows}
+          data={orders.map((order) => ({
+            ...order,
+            installments: order.installments.length,
+          }))}
           heads={keys}
-          withoutId={true}
-          linkBeginning="/borrow"
+          linkBeginning="/orders"
           loadMore={loadMore}
         />
       )}

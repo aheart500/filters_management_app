@@ -59,6 +59,18 @@ const Home = () => {
         <Link href="/sellingFees/new">
           <button>إضافة عمولة بيع</button>
         </Link>
+        <Link href="/loans">
+          <button>القروض</button>
+        </Link>
+        <Link href="/loans/new">
+          <button>إضافة قرض</button>
+        </Link>
+        <Link href="/orders">
+          <button>الأوردرات</button>
+        </Link>
+        <Link href="/orders/new">
+          <button>إضافة اوردر</button>
+        </Link>
       </div>
     </main>
   );

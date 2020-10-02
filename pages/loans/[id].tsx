@@ -1,36 +1,37 @@
 import { useMutation } from "@apollo/client";
 import { GetServerSideProps } from "next";
 import { useState } from "react";
-import { Borrow } from "../../server/Models";
-import { BorrowQueryOptions } from "../../server/resolvers/Borrow";
-import { BorrowAttributes } from "../../server/Models/Borrow";
-import { DELETE_BORROW, UPDATE_BORROW } from "../../utils/Queries/Borrow";
+import { LoanQueryOptions } from "../../server/resolvers/Loan";
+import { LoanAttributes } from "../../server/Models/Loan";
+import { DELETE_LOAN, UPDATE_LOAN } from "../../utils/Queries/Loan";
+import { Loan } from "../../server/Models";
 import styles from "../../styles/form.module.css";
 import Header from "../../components/Header";
 import Form from "../../components/Form";
 
-const CustomerForm = ({ penalty }: { penalty: BorrowAttributes | null }) => {
+const CustomerForm = ({ penalty }: { penalty: LoanAttributes | null }) => {
   let initialState = {};
   if (penalty) {
     for (let key in penalty) {
       initialState[key] = penalty[key] || "";
     }
   } else initialState = null;
-  const [data, setData] = useState<Partial<BorrowAttributes> | null>(
+  const [data, setData] = useState<Partial<LoanAttributes> | null>(
     initialState
   );
   const [loading, setLoading] = useState(false);
 
   if (!penalty) return <div>كود خطأ</div>;
-  const [update] = useMutation(UPDATE_BORROW, {
+  const [update] = useMutation(UPDATE_LOAN, {
     variables: {
       ...data,
       month: parseInt("" + data.month),
       year: parseInt("" + data.year),
       price: parseFloat("" + data.price),
+      paid: parseFloat("" + data.paid),
     },
   });
-  const [deleteQuery] = useMutation(DELETE_BORROW, {
+  const [deleteQuery] = useMutation(DELETE_LOAN, {
     variables: { id: penalty.id },
   });
 
@@ -54,17 +55,17 @@ const CustomerForm = ({ penalty }: { penalty: BorrowAttributes | null }) => {
       setLoading(true);
       deleteQuery().then(() => {
         setLoading(false);
-        window.location.replace("/borrow");
+        window.location.replace("/loans");
       });
     }
   };
   return (
     <main className={styles.main}>
       <Header
-        title={`السلف: ${penalty.id}`}
+        title={`القرض: ${penalty.id}`}
         buttons={[
           { title: "الصفحة الرئيسية", link: "/" },
-          { title: " القائمة", link: "/borrow" },
+          { title: " القائمة", link: "/loans" },
         ]}
       />
       <Form
@@ -74,7 +75,7 @@ const CustomerForm = ({ penalty }: { penalty: BorrowAttributes | null }) => {
         buttons={[
           { title: "تحديث البيانات", onClick: () => handleMutation("update") },
           {
-            title: "حذف السلف",
+            title: "حذف القرض",
             onClick: () => handleMutation("delete"),
             className: "w3-red",
           },
@@ -109,6 +110,13 @@ const CustomerForm = ({ penalty }: { penalty: BorrowAttributes | null }) => {
             },
           },
           {
+            label: "المسدد",
+            type: "number",
+            props: {
+              name: "paid",
+            },
+          },
+          {
             label: "ملاحظات",
             type: "textarea",
             props: {
@@ -122,11 +130,11 @@ const CustomerForm = ({ penalty }: { penalty: BorrowAttributes | null }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  let penalty = await Borrow.findOne({
+  let penalty = await Loan.findOne({
     where: {
       id: params.id,
     },
-    include: BorrowQueryOptions.include,
+    include: LoanQueryOptions.include,
     raw: true,
   });
   return {

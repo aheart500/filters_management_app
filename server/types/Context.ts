@@ -17,6 +17,8 @@ import {
   InstallmentAttributes,
   InstallmentCreationAttributes,
 } from "../Models/Installment";
+import { LoanAttributes, LoanCreationAttributes } from "../Models/Loan";
+import { OrderModel } from "../Models/Order";
 import {
   PenaltyAttributes,
   PenaltyCreationAttributes,
@@ -45,4 +47,6 @@ export interface GraphQLContext {
   Installment: ModelCtor<
     Model<InstallmentAttributes, InstallmentCreationAttributes>
   >;
+  Loan: ModelCtor<Model<LoanAttributes, LoanCreationAttributes>>;
+  Order: OrderModel;
 }

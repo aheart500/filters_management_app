@@ -5,6 +5,12 @@
   overflow-x: auto;
   max-height: 100vh;
 }
+.installments-table {
+  margin: 1rem auto;
+}
+.installments-table .centerr {
+  text-align: center !important;
+}
 .noWrap {
   white-space: nowrap !important;
   display: block !important;

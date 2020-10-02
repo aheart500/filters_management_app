@@ -1,5 +1,6 @@
 import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
+import { CustomerAttributes } from "./Customer";
 
 export interface InstallmentAttributes {
   id: number;
@@ -8,6 +9,7 @@ export interface InstallmentAttributes {
   fixed: boolean;
   paid: boolean;
   customerId: number;
+  customer: CustomerAttributes;
 }
 
 export interface InstallmentCreationAttributes
