@@ -5,12 +5,7 @@ import { WorkerAttributes } from "../server/Models/Worker";
 import styles from "../styles/form.module.css";
 import { GET_CUSTOMER } from "../utils/Queries/Customer";
 import { GET_WORKER } from "../utils/Queries/Worker";
-interface Person {
-  name: string;
-  message: string;
-  loading: boolean;
-  error: boolean;
-}
+import { Person, LoadAndSet, handleLoadAndSet } from "../utils/LoadField";
 interface InputFieldProps {
   placeholder?: string;
   name: string;
@@ -51,14 +46,16 @@ const Form = ({
   header,
   fields,
 }: FormProps) => {
-  let workers: Array<Person> = [];
-  let customers: Array<Person> = [];
   const [getWorker] = useMutation<{ worker: Pick<WorkerAttributes, "name"> }>(
     GET_WORKER
   );
   const [getCustomer] = useMutation<{
     customer: Pick<CustomerAttributes, "name">;
   }>(GET_CUSTOMER);
+
+  let workers: Array<Person> = [];
+  let customers: Array<Person> = [];
+
   fields.forEach((field) => {
     const theField = {
       name: field.props.name,
@@ -78,170 +75,33 @@ const Form = ({
 
   useEffect(() => {
     if (workerFields) {
-      workerFields.forEach((field) => {
-        if (data[field.name] !== "") {
-          setWorkerFields((prev) => {
-            return prev.map((workerField) => {
-              if (workerField.name === field.name)
-                return {
-                  ...workerField,
-                  loading: true,
-                  error: false,
-                  message: "",
-                };
-              return workerField;
-            });
-          });
-          getWorker({ variables: { id: data[field.name] } }).then(
-            ({ data }) => {
-              setWorkerFields((prev) => {
-                return prev.map((workerField) => {
-                  if (workerField.name === field.name)
-                    return {
-                      ...workerField,
-                      loading: false,
-                      error: false,
-                      message: data.worker.name,
-                    };
-                  return workerField;
-                });
-              });
-            }
-          );
-        }
-      });
+      LoadAndSet("worker", getWorker, data, workerFields, setWorkerFields);
     }
     if (customerFields) {
-      customerFields.forEach((field) => {
-        if (data[field.name] !== "") {
-          setCustomerFields((prev) => {
-            return prev.map((customerFields) => {
-              if (customerFields.name === field.name)
-                return {
-                  ...customerFields,
-                  loading: true,
-                  error: false,
-                  message: "",
-                };
-              return customerFields;
-            });
-          });
-          getCustomer({ variables: { id: data[field.name] } }).then(
-            ({ data }) => {
-              setCustomerFields((prev) => {
-                return prev.map((customerFields) => {
-                  if (customerFields.name === field.name)
-                    return {
-                      ...customerFields,
-                      loading: false,
-                      error: false,
-                      message: data.customer.name,
-                    };
-                  return customerFields;
-                });
-              });
-            }
-          );
-        }
-      });
+      LoadAndSet(
+        "customer",
+        getCustomer,
+        data,
+        customerFields,
+        setCustomerFields
+      );
     }
   }, []);
-  const handleWorker = (
+  const handleFieldsWithQuery = (
     e: React.ChangeEvent<HTMLInputElement>,
-    cb: typeof handleChange
+    cb: typeof handleChange,
+    type: "customer" | "worker"
   ) => {
     cb(e);
     const { name, value } = e.target;
-    if (value === "") {
-      setWorkerFields(
-        workerFields.map((field) => {
-          if (field.name === name)
-            return { ...field, loading: false, error: false, message: "" };
-          return field;
-        })
-      );
-      return;
-    }
-    setWorkerFields(
-      workerFields.map((field) => {
-        if (field.name === name)
-          return { ...field, loading: true, error: false, message: "" };
-        return field;
-      })
+    handleLoadAndSet(
+      name,
+      value,
+      type === "worker" ? getWorker : getCustomer,
+      type,
+      type === "worker" ? workerFields : customerFields,
+      type === "worker" ? setWorkerFields : setCustomerFields
     );
-    getWorker({ variables: { id: value } }).then(({ data }) => {
-      if (data.worker) {
-        setWorkerFields(
-          workerFields.map((field) => {
-            if (field.name === name)
-              return {
-                ...field,
-                loading: false,
-                error: false,
-                message: data.worker.name,
-              };
-            return field;
-          })
-        );
-      } else {
-        setWorkerFields(
-          workerFields.map((field) => {
-            if (field.name === name)
-              return { ...field, loading: false, error: true };
-            return field;
-          })
-        );
-      }
-    });
-  };
-
-  const handleCustomer = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    cb: typeof handleChange
-  ) => {
-    cb(e);
-    const { name, value } = e.target;
-    if (value === "") {
-      setCustomerFields(
-        customerFields.map((field) => {
-          if (field.name === name)
-            return { ...field, loading: false, error: false, message: "" };
-          return field;
-        })
-      );
-      return;
-    }
-    setCustomerFields(
-      customerFields.map((field) => {
-        if (field.name === name)
-          return { ...field, loading: true, error: false, message: "" };
-        return field;
-      })
-    );
-    getCustomer({ variables: { id: value } }).then(({ data }) => {
-      if (data.customer) {
-        setCustomerFields(
-          customerFields.map((field) => {
-            if (field.name === name)
-              return {
-                ...field,
-                loading: false,
-                error: false,
-                message: data.customer.name,
-              };
-            return field;
-          })
-        );
-      } else {
-        setCustomerFields(
-          customerFields.map((field) => {
-            if (field.name === name)
-              return { ...field, loading: false, error: true };
-            return field;
-          })
-        );
-      }
-    });
   };
 
   return (
@@ -253,16 +113,14 @@ const Form = ({
             value: data[field.props.name],
             onChange: handleChange,
           };
-          if (field.type === "worker") {
-            var thisField = workerFields.find(
-              (workerField) => workerField.name === field.props.name
+          if (["worker", "customer"].includes(field.type)) {
+            const theSearchArr =
+              field.type === "worker" ? workerFields : customerFields;
+            var thisField = theSearchArr.find(
+              (theSearchArr) => theSearchArr.name === field.props.name
             );
           }
-          if (field.type === "customer") {
-            var thisField = customerFields.find(
-              (customerField) => customerField.name === field.props.name
-            );
-          }
+
           return (
             <div className={styles.inputContainer} key={i}>
               <label>{field.label}</label>
@@ -275,13 +133,19 @@ const Form = ({
               {field.type === "number" && (
                 <input type="number" {...field.props} {...valueProps} />
               )}
-              {field.type === "customer" && (
+              {["worker", "customer"].includes(field.type) && (
                 <>
                   <input
                     type="number"
                     {...field.props}
                     value={valueProps.value}
-                    onChange={(e) => handleCustomer(e, valueProps.onChange)}
+                    onChange={(e) =>
+                      handleFieldsWithQuery(
+                        e,
+                        valueProps.onChange,
+                        field.type as "customer" | "worker"
+                      )
+                    }
                   />
                   <span
                     className={
@@ -291,30 +155,9 @@ const Form = ({
                     {thisField.loading
                       ? "جاري التحميل ..."
                       : thisField.error
-                      ? "لا يوجد عميل بهذا الكود"
-                      : thisField.message
-                      ? `الأسم: ${thisField.message}`
-                      : ""}
-                  </span>
-                </>
-              )}
-              {field.type === "worker" && (
-                <>
-                  <input
-                    type="number"
-                    {...field.props}
-                    value={valueProps.value}
-                    onChange={(e) => handleWorker(e, valueProps.onChange)}
-                  />
-                  <span
-                    className={
-                      thisField.error ? styles.spanError : styles.spanName
-                    }
-                  >
-                    {thisField.loading
-                      ? "جاري التحميل ..."
-                      : thisField.error
-                      ? "لا يوجد موظف بهذا الكود"
+                      ? `لا يوجد ${
+                          field.type === "customer" ? "عميل" : "موظف"
+                        } بهذا الكود`
                       : thisField.message
                       ? `الأسم: ${thisField.message}`
                       : ""}
