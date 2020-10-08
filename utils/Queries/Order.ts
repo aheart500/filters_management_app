@@ -29,6 +29,7 @@ export const GET_ORDERS = gql`
 
 export const UPDATE_ORDER = gql`
   mutation update(
+    $city: String
     $id: ID!
     $day: String
     $month: String
@@ -43,11 +44,13 @@ export const UPDATE_ORDER = gql`
       notes: $notes
       day: $day
       workerId: $workerId
+      city: $city
     )
   }
 `;
 export const ADD_ORDER = gql`
   mutation add(
+    $city: String
     $day: String
     $month: String
     $year: Int
@@ -60,6 +63,7 @@ export const ADD_ORDER = gql`
       notes: $notes
       day: $day
       workerId: $workerId
+      city: $city
     ) {
       id
     }

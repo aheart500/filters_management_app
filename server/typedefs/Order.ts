@@ -18,6 +18,7 @@ export default gql`
   }
   extend type Mutation {
     addOrder(
+      city: String
       day: String
       month: String
       year: Int
@@ -25,6 +26,7 @@ export default gql`
       workerId: ID!
     ): Order
     updateOrder(
+      city: String
       id: ID!
       day: String
       month: String

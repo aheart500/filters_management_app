@@ -9,6 +9,7 @@ import {
   CustomerAttributes,
   CustomerCreationAttributes,
 } from "../Models/Customer";
+import { FixModel } from "../Models/Fix";
 import {
   InstalligFeeCreationAttributes,
   InstallingFeeAttributes,
@@ -49,4 +50,5 @@ export interface GraphQLContext {
   >;
   Loan: ModelCtor<Model<LoanAttributes, LoanCreationAttributes>>;
   Order: OrderModel;
+  Fix: FixModel;
 }

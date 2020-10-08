@@ -38,14 +38,27 @@ export default gql`
     customer: Customer
     orderId: ID
   }
-
+  type Fix {
+    id: ID!
+    month: Int!
+    year: Int!
+    done: Boolean
+    price: Float
+    customerId: ID!
+    orderId: ID
+    customer: Customer
+  }
   extend type Query {
     customers(offset: ID, search: String): [Customer!]!
     installments(customerId: ID!): [Installment!]!
+    fixes(customerId: ID!): [Fix!]!
   }
   extend type Mutation {
     filteredInstallments(city: String, month: Int, year: Int): [Installment!]!
+    filteredFixes(city: String, month: Int, year: Int): [Fix!]!
     customer(id: ID!): Customer
+    updateFix(id: ID!, done: Boolean, price: Float, orderId: ID): String
+    updateFixes(ids: [ID!]!, done: Boolean, price: Float, orderId: ID): String
     updateInstallment(
       id: ID!
       fixed: Boolean

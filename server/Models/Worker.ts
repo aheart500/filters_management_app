@@ -11,6 +11,7 @@ import SellingFee from "./SellingFee";
 import Installment from "./Installment";
 import Loan from "./Loan";
 import Order from "./Order";
+import Fix from "./Fix";
 
 export interface WorkerAttributes {
   id: number;
@@ -83,8 +84,13 @@ InstallingFee.belongsTo(Customer, { as: "customer" });
 SellingFee.belongsTo(Customer, { as: "customer" });
 
 Installment.belongsTo(Customer, { as: "customer" });
+Fix.belongsTo(Customer, { as: "customer" });
+
 Order.hasMany(Installment, { as: "installments", foreignKey: "orderId" });
+Order.hasMany(Fix, { as: "fixes", foreignKey: "orderId" });
 Customer.hasMany(Installment, { as: "installments", foreignKey: "customerId" });
+Customer.hasMany(Fix, { as: "fixes", foreignKey: "customerId" });
+
 Customer.belongsTo(Worker, { as: "m1" });
 Customer.belongsTo(Worker, { as: "m2" });
 Customer.belongsTo(Worker, { as: "m3" });

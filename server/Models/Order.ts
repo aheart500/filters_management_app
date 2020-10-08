@@ -2,6 +2,7 @@ import db from "../MySQL";
 import { Optional, DataTypes, ModelDefined } from "sequelize";
 import { WorkerAttributes } from "./Worker";
 import { InstallmentAttributes } from "./Installment";
+import { FixAttributes } from "./Fix";
 
 export interface OrderAttributes {
   id: number;
@@ -10,6 +11,7 @@ export interface OrderAttributes {
   month: string;
   year: number;
   installments: InstallmentAttributes[];
+  fixes: FixAttributes[];
   notes: string;
   workerId: number;
   worker: WorkerAttributes;

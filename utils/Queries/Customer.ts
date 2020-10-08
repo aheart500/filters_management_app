@@ -196,3 +196,42 @@ export const GET_FILTERED_INSTALLMENTS = gql`
     }
   }
 `;
+
+export const GET_FIXES = gql`
+  query getInstallments($customerId: ID!) {
+    fixes(customerId: $customerId) {
+      id
+      year
+      month
+      done
+      price
+    }
+  }
+`;
+export const UPDATE_Fix = gql`
+  mutation update($id: ID!, $done: Boolean, $price: Float, $orderId: ID) {
+    updateFix(id: $id, done: $done, price: $price, orderId: $orderId)
+  }
+`;
+export const UPDATE_FIXES = gql`
+  mutation update($ids: [ID!]!, $done: Boolean, $price: Float, $orderId: ID) {
+    updateFixes(ids: $ids, done: $done, price: $price, orderId: $orderId)
+  }
+`;
+export const GET_FILTERED_FIXES = gql`
+  mutation getInstallments($city: String, $year: Int, $month: Int) {
+    filteredFixes(city: $city, year: $year, month: $month) {
+      id
+      year
+      month
+      price
+      done
+      customerId
+      customer {
+        id
+        name
+        address
+      }
+    }
+  }
+`;

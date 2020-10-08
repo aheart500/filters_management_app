@@ -10,6 +10,7 @@ import SellingFee from "./SellingFee";
 import Installment from "./Installment";
 import Loan from "./Loan";
 import Order from "./Order";
+import Fix from "./Fix";
 
 export {
   Worker,
@@ -24,4 +25,5 @@ export {
   Installment,
   Loan,
   Order,
+  Fix,
 };

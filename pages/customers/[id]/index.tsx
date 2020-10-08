@@ -78,15 +78,14 @@ const CustomerForm = ({
     }
   };
   let buttons = [
+    {
+      link: "/customers/" + customer.id + "/installments",
+      title: "الأقساط و الصيانات",
+    },
     { title: "الصفحة الرئيسية", link: "/" },
     { title: " القائمة", link: "/customers" },
   ];
-  if (customer.payment_type === "قسط") {
-    buttons.unshift({
-      link: "/customers/" + customer.id + "/installments",
-      title: "الأقساط",
-    });
-  }
+
   return (
     <main className={styles.main + " " + styles.absolutee}>
       <Header title={`العميل: ${customer.name}`} buttons={buttons} />

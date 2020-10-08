@@ -2,7 +2,6 @@ import { IResolvers } from "apollo-server-express";
 import { FindOptions, Op, where } from "sequelize";
 import { Worker } from "../Models";
 import Customer, { CustomerAttributes } from "../Models/Customer";
-import { InstallmentAttributes } from "../Models/Installment";
 import { GraphQLContext } from "../types/Context";
 const LIMIT = 10;
 export const CustomerModelQuery = {
@@ -65,19 +64,39 @@ const resolvers: IResolvers<any, GraphQLContext> = {
     },
     installments: (_, { customerId }, { Installment }) =>
       Installment.findAll({ where: { customerId } }),
+    fixes: (_, { customerId }, { Fix }) =>
+      Fix.findAll({ where: { customerId } }),
   },
   Mutation: {
     addCustomer: async (
       _,
       args: CustomerAttributes,
-      { Customer, Installment }
+      { Customer, Installment, Fix }
     ) => {
       const customer = await Customer.create(args);
+      let [year, month]: any = args.load_date.split("-");
+      year = Number(year);
+      month = Number(month);
+      let fixes: any[] = [];
+      let myYear = year;
+      let myMonth = month;
+      for (let i = 0; i < 4; i++) {
+        if (myMonth + 3 > 12) {
+          myMonth = myMonth + 3 - 12;
+          myYear += 1;
+        } else {
+          myMonth = myMonth + 3;
+        }
+        fixes.push({
+          customerId: (customer as any).id,
+          month: myMonth,
+          year: myYear,
+        });
+      }
+      await Fix.bulkCreate(fixes);
       if (args.payment_type === "قسط") {
-        let [year, month]: any = args.load_date.split("-");
-        year = Number(year);
-        month = Number(month);
         let installments: any[] = [];
+
         for (let i = 0; i < args.installments_number; i++) {
           installments.push({
             customerId: (customer as any).id,
@@ -107,6 +126,14 @@ const resolvers: IResolvers<any, GraphQLContext> = {
       await Installment.update(args, { where: { id: { [Op.in]: ids } } });
       return "Updated";
     },
+    updateFix: async (_, { id, ...args }, { Fix }) => {
+      await Fix.update(args, { where: { id } });
+      return "Updated";
+    },
+    updateFixes: async (_, { ids, ...args }, { Fix }) => {
+      await Fix.update(args, { where: { id: { [Op.in]: ids } } });
+      return "Updated";
+    },
     deleteCustomer: async (_, { id }, { Customer }) => {
       await Customer.destroy({ where: { id } });
       return "Deleted";
@@ -119,7 +146,30 @@ const resolvers: IResolvers<any, GraphQLContext> = {
           model: Customer,
           as: "customer",
           attributes: ["id", "name", "city", "address", "installment_price"],
-          where: city ? { city: { [Op.regexp]: city } } : {},
+          where: city
+            ? {
+                city: {
+                  [Op.in]: city.split("/"),
+                },
+              }
+            : {},
+        },
+      });
+    },
+    filteredFixes: (_, { city, ...args }, { Fix }) => {
+      return Fix.findAll({
+        where: args,
+        include: {
+          model: Customer,
+          as: "customer",
+          attributes: ["id", "name", "city", "address"],
+          where: city
+            ? {
+                city: {
+                  [Op.in]: city.split("/"),
+                },
+              }
+            : {},
         },
       });
     },

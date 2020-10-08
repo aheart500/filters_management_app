@@ -5,11 +5,15 @@ import styles from "../../styles/form.module.css";
 import Header from "../../components/Header";
 import Form from "../../components/Form";
 import Order, { OrderAttributes } from "../../server/Models/Order";
-
 import { DELETE_ORDER, UPDATE_ORDER } from "../../utils/Queries/Order";
-import { Customer, Installment, Worker } from "../../server/Models";
+import { Customer, Fix, Installment, Worker } from "../../server/Models";
 import InstallmentsTable from "../../components/InstallmentsTable";
-import { UPDATE_INSTALLMENTS } from "../../utils/Queries/Customer";
+import FixesTable from "../../components/FixesTable";
+
+import {
+  UPDATE_FIXES,
+  UPDATE_INSTALLMENTS,
+} from "../../utils/Queries/Customer";
 
 const CustomerForm = ({ order }: { order: OrderAttributes | null }) => {
   let initialState = {};
@@ -62,10 +66,23 @@ const CustomerForm = ({ order }: { order: OrderAttributes | null }) => {
       ?.filter((installment) => installment.paid)
       .map((installment) => installment.id.toString())
   );
-
-  const isSelected = (id: any) => paidInstallments.includes(id.toString());
+  const [doneFixes, setDoneFixes] = useState(
+    order.fixes?.filter((fix) => fix.done).map((fix) => fix.id.toString())
+  );
+  const isSelectedFix = (id: any) => doneFixes.includes(id.toString());
+  const [updateFixes] = useMutation(UPDATE_FIXES);
+  const handleSelectFix = (fix: any, done: boolean) => {
+    updateFixes({ variables: { ids: [fix.id], done } }).then(() => {
+      if (done) {
+        setDoneFixes(doneFixes.concat(fix.id.toString()));
+      } else {
+        setDoneFixes(doneFixes.filter((id) => id !== fix.id.toString()));
+      }
+    });
+  };
+  const isSelectedInst = (id: any) => paidInstallments.includes(id.toString());
   const [updateInstallments] = useMutation(UPDATE_INSTALLMENTS);
-  const handleSelect = (installment: any, paid: boolean) => {
+  const handleSelectInst = (installment: any, paid: boolean) => {
     updateInstallments({ variables: { ids: [installment.id], paid } }).then(
       () => {
         if (paid) {
@@ -92,7 +109,17 @@ const CustomerForm = ({ order }: { order: OrderAttributes | null }) => {
       );
     });
   };
-  const RenderedTable = () => {
+  const doAll = () => {
+    updateFixes({
+      variables: {
+        ids: order.fixes.map((fix) => fix.id),
+        done: true,
+      },
+    }).then(() => {
+      setDoneFixes(order.fixes.map((fix) => fix.id.toString()));
+    });
+  };
+  const RenderedInstTable = () => {
     if (order.installments.length === 0) return <label>لا توجد أقساط</label>;
     return (
       <>
@@ -100,13 +127,13 @@ const CustomerForm = ({ order }: { order: OrderAttributes | null }) => {
           data={order.installments || []}
           withSelet={{
             type: "pay",
-            handleSelected: handleSelect,
-            isSelected,
+            handleSelectedInst: handleSelectInst,
+            isSelectedInst,
           }}
         />
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3>
-            مجموع التحصيل: {"    "}
+            مجموع تحصيل الأقساط: {"    "}
             {order.installments.reduce(
               (t, n) => t + n.customer.installment_price,
               0
@@ -120,6 +147,36 @@ const CustomerForm = ({ order }: { order: OrderAttributes | null }) => {
             onClick={payAll}
           >
             <h4>إتمام جميع الأقساط</h4>
+          </button>
+        </div>
+      </>
+    );
+  };
+  const RenderedFixTable = () => {
+    if (order.fixes.length === 0) return <label>لا توجد صيانات</label>;
+    return (
+      <>
+        <FixesTable
+          data={order.fixes || []}
+          withSelet={{
+            type: "pay",
+            handleSelectedFix: handleSelectFix,
+            isSelectedFix,
+          }}
+        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <h3>
+            مجموع تحصيل الصيانات: {"    "}
+            {order.fixes.reduce((t, n) => t + n.price, 0)}
+            {"   "}
+            جنيه
+          </h3>
+          <button
+            className="w3-button w3-round-large w3-hover-teal w3-green"
+            style={{ margin: "0 1rem", padding: "0 10px" }}
+            onClick={doAll}
+          >
+            <h4>إتمام جميع الصيانات</h4>
           </button>
         </div>
       </>
@@ -190,7 +247,14 @@ const CustomerForm = ({ order }: { order: OrderAttributes | null }) => {
             label: "الأقساط",
             type: "component",
             props: {
-              value: RenderedTable(),
+              value: RenderedInstTable(),
+            },
+          },
+          {
+            label: "الصيانات",
+            type: "component",
+            props: {
+              value: RenderedFixTable(),
             },
           },
           {
@@ -215,6 +279,22 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       {
         model: Worker,
         as: "worker",
+      },
+      {
+        model: Fix,
+        as: "fixes",
+        include: [
+          {
+            model: Customer,
+            as: "customer",
+            include: [
+              {
+                model: Fix,
+                as: "fixes",
+              },
+            ],
+          },
+        ],
       },
       {
         model: Installment,

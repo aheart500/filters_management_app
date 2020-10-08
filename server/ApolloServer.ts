@@ -14,6 +14,7 @@ import {
   Installment,
   Loan,
   Order,
+  Fix,
 } from "./Models";
 import { GraphQLContext } from "./types/Context";
 
@@ -33,5 +34,6 @@ export default new ApolloServer({
     Installment,
     Loan,
     Order,
+    Fix,
   }),
 });
